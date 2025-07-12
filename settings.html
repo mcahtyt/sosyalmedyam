@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya - Ayarlar</title>
+    <style>
+        /* Instagram Temalı Renk Paleti */
+        :root {
+            --primary-bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --border-color: #DBDBDB;
+            --text-primary: #262626;
+            --text-secondary: #8E8E8E;
+            --accent-blue: #0095F6;
+            --accent-blue-hover: #007ACC;
+            --button-text-light: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --error-red: #ED4956;
+        }
+
+        /* Genel CSS Ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header (Üst Menü) */
+        .header {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .header nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .header nav a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 20px;
+            max-width: 700px;
+            margin: 20px auto;
+            background-color: var(--primary-bg);
+            border-radius: 8px;
+        }
+
+        .main-content h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* Ayarlar Formu */
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .settings-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .settings-form input[type="text"],
+        .settings-form input[type="url"],
+        .settings-form textarea {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .settings-form input[type="text"]:focus,
+        .settings-form input[type="url"]:focus,
+        .settings-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+
+        .settings-form button {
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .settings-form button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Profil Resmi Önizlemesi */
+        .profile-pic-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            margin-top: 10px;
+            margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer (Alt Menü) */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            font-size: 0.85em;
+        }
+
+        /* Mesaj kutusu stilleri */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 25px 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.1em;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            box-shadow: none;
+        }
+
+        .message-box button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Üst Menü (Header) -->
+    <header class="header">
+        <div class="logo">Sosyal Medyam</div>
+        <nav>
+            <a href="home.html">Akış</a>
+            <a href="explore.html">Keşfet</a>
+            <a href="upload.html">Gönderi Oluştur</a>
+            <a href="messages.html">Mesajlar</a>
+            <a href="profile.html">Profilim</a>
+            <a href="#" id="logoutBtn">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <h1>Ayarlar</h1>
+        <form id="settingsForm" class="settings-form">
+            <div class="input-group">
+                <label for="username">Kullanıcı Adı:</label>
+                <input type="text" id="username" readonly> <!-- Kullanıcı adı düzenlenemez -->
+            </div>
+            <div class="input-group">
+                <label for="email">E-posta:</label>
+                <input type="text" id="email" readonly> <!-- E-posta düzenlenemez -->
+            </div>
+            <div class="input-group">
+                <label for="profilePicUrl">Profil Resmi URL'si:</label>
+                <input type="url" id="profilePicUrl" placeholder="Yeni profil resmi URL'si">
+                <img id="profilePicPreview" src="https://placehold.co/100x100/DBDBDB/262626?text=PP" alt="Profil Resmi Önizleme" class="profile-pic-preview">
+            </div>
+            <div class="input-group">
+                <label for="bio">Biyografi:</label>
+                <textarea id="bio" placeholder="Biyografinizi yazın..." rows="3"></textarea>
+            </div>
+            <button type="submit">Ayarları Kaydet</button>
+        </form>
+    </main>
+
+    <!-- Alt Menü (Footer) -->
+    <footer class="footer">
+        <p>&copy; 2025 Sosyal Medyam. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Özel mesaj kutusu -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="closeMessageBox">Tamam</button>
+    </div>
+
+    <script>
+        // --- Ortak Yardımcı Fonksiyonlar ---
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBoxBtn = document.getElementById('closeMessageBox');
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        closeMessageBoxBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
+
+        function getUsers() {
+            const usersJson = localStorage.getItem('social_media_users');
+            return usersJson ? JSON.parse(usersJson) : [];
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('social_media_users', JSON.stringify(users));
+        }
+
+        function getLoggedInUser() {
+            const loggedInUserJson = localStorage.getItem('loggedInUser');
+            return loggedInUserJson ? JSON.parse(loggedInUserJson) : null;
+        }
+
+        function updateLoggedInUserInLocalStorage(updatedUser) {
+            localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+            // Ayrıca genel kullanıcı listesini de güncelle
+            let users = getUsers();
+            const userIndex = users.findIndex(u => u.id === updatedUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = updatedUser;
+                saveUsers(users);
+            }
+        }
+
+        // --- Sayfa Yükleme ve Kullanıcı Kontrolü ---
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentUser = getLoggedInUser();
+            if (!currentUser) {
+                window.location.href = 'index.html'; // Giriş yapmamışsa yönlendir
+                return;
+            }
+
+            // Çıkış Yap butonu işlevi
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('loggedInUser');
+                showMessage('Çıkış yapıldı. Giriş sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            });
+
+            loadUserSettings(); // Kullanıcı ayarlarını yükle
+
+            // Form gönderim olay dinleyicisi
+            document.getElementById('settingsForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveUserSettings();
+            });
+
+            // Profil resmi URL'si değiştiğinde önizlemeyi güncelle
+            document.getElementById('profilePicUrl').addEventListener('input', (e) => {
+                const url = e.target.value;
+                document.getElementById('profilePicPreview').src = url || 'https://placehold.co/100x100/DBDBDB/262626?text=PP';
+            });
+        });
+
+        // --- Kullanıcı Ayarlarını Yükleme ---
+        function loadUserSettings() {
+            document.getElementById('username').value = currentUser.username;
+            document.getElementById('email').value = currentUser.email;
+            document.getElementById('profilePicUrl').value = currentUser.profilePic || '';
+            document.getElementById('profilePicPreview').src = currentUser.profilePic || 'https://placehold.co/100x100/DBDBDB/262626?text=PP';
+            document.getElementById('bio').value = currentUser.bio || '';
+        }
+
+        // --- Kullanıcı Ayarlarını Kaydetme ---
+        function saveUserSettings() {
+            const newProfilePic = document.getElementById('profilePicUrl').value;
+            const newBio = document.getElementById('bio').value;
+
+            // Güncel kullanıcı nesnesini oluştur
+            const updatedUser = {
+                ...currentUser, // Mevcut tüm bilgileri koru
+                profilePic: newProfilePic || 'https://placehold.co/100x100/DBDBDB/262626?text=PP',
+                bio: newBio
+            };
+
+            updateLoggedInUserInLocalStorage(updatedUser); // localStorage'ı güncelle
+
+            showMessage('Ayarlar başarıyla kaydedildi!');
+            // Profil sayfasına geri yönlendirebiliriz
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

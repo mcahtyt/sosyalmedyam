@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya - Bildirimler</title>
+    <style>
+        /* Instagram Temalı Renk Paleti */
+        :root {
+            --primary-bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --border-color: #DBDBDB;
+            --text-primary: #262626;
+            --text-secondary: #8E8E8E;
+            --accent-blue: #0095F6;
+            --accent-blue-hover: #007ACC;
+            --button-text-light: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --error-red: #ED4956;
+        }
+
+        /* Genel CSS Ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header (Üst Menü) */
+        .header {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .header nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .header nav a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--primary-bg);
+            border-radius: 8px;
+        }
+
+        .main-content h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* Bildirim Listesi */
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .notification-item {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .notification-item:hover {
+            transform: translateY(-3px);
+            background-color: var(--primary-bg);
+        }
+
+        .notification-item .icon {
+            font-size: 1.5em;
+            color: var(--accent-blue);
+        }
+
+        .notification-item .content {
+            flex-grow: 1;
+        }
+
+        .notification-item .content .message {
+            font-size: 1.1em;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .notification-item .content .time {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        /* Footer (Alt Menü) */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            font-size: 0.85em;
+        }
+
+        /* Mesaj kutusu stilleri */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 25px 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.1em;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            box-shadow: none;
+        }
+
+        .message-box button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Üst Menü (Header) -->
+    <header class="header">
+        <div class="logo">onelupp</div>
+        <nav>
+            <a href="home.html">Akış</a>
+            <a href="explore.html">Keşfet</a>
+            <a href="upload.html">Gönderi Oluştur</a>
+            <a href="messages.html">Mesajlar</a>
+            <a href="profile.html">Profilim</a>
+            <a href="#" id="logoutBtn">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <h1>Bildirimler</h1>
+        <div id="notificationList" class="notification-list">
+            <!-- Bildirimler buraya JavaScript ile yüklenecek -->
+            <p style="text-align: center; color: var(--text-secondary);" id="noNotificationsMessage">Henüz hiç bildiriminiz yok.</p>
+        </div>
+    </main>
+
+    <!-- Alt Menü (Footer) -->
+    <footer class="footer">
+        <p>&copy; 2025 onelupp. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Özel mesaj kutusu -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="closeMessageBox">Tamam</button>
+    </div>
+
+    <script>
+        // --- Ortak Yardımcı Fonksiyonlar ---
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBoxBtn = document.getElementById('closeMessageBox');
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        closeMessageBoxBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
+
+        function getLoggedInUser() {
+            const loggedInUserJson = localStorage.getItem('loggedInUser');
+            return loggedInUserJson ? JSON.parse(loggedInUserJson) : null;
+        }
+
+        // --- Sayfa Yükleme ve Kullanıcı Kontrolü ---
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentUser = getLoggedInUser();
+            if (!currentUser) {
+                window.location.href = 'index.html'; // Giriş yapmamışsa yönlendir
+                return;
+            }
+
+            // Çıkış Yap butonu işlevi
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('loggedInUser');
+                showMessage('Çıkış yapıldı. Giriş sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            });
+
+            loadNotifications(); // Bildirimleri yükle
+        });
+
+        // --- Bildirimleri Yükleme ve Görüntüleme ---
+        function loadNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            const noNotificationsMessage = document.getElementById('noNotificationsMessage');
+
+            // Şimdilik sadece örnek bildirimler oluşturuyoruz.
+            // Gerçek bir uygulamada bu veriler sunucudan gelir.
+            const notifications = [
+                { id: 'n1', type: 'like', message: 'Kullanıcı1 gönderinizi beğendi.', time: '2 dakika önce' },
+                { id: 'n2', type: 'comment', message: 'Kullanıcı2 gönderinize yorum yaptı.', time: '1 saat önce' },
+                { id: 'n3', type: 'follow', message: 'Kullanıcı3 sizi takip etmeye başladı.', time: '3 saat önce' },
+                { id: 'n4', type: 'message', message: 'Kullanıcı4 size yeni bir mesaj gönderdi.', time: 'Dün' },
+                { id: 'n5', type: 'like', message: 'Kullanıcı5 gönderinizi beğendi.', time: '2 gün önce' },
+            ];
+
+            if (notifications.length === 0) {
+                noNotificationsMessage.style.display = 'block';
+                return;
+            } else {
+                noNotificationsMessage.style.display = 'none';
+            }
+
+            notificationList.innerHTML = ''; // Önceki bildirimleri temizle
+
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                notificationItem.dataset.id = notification.id;
+
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'icon';
+                // Bildirim tipine göre ikon seçimi
+                if (notification.type === 'like') {
+                    iconSpan.textContent = '❤️';
+                } else if (notification.type === 'comment') {
+                    iconSpan.textContent = '💬';
+                } else if (notification.type === 'follow') {
+                    iconSpan.textContent = '➕';
+                } else if (notification.type === 'message') {
+                    iconSpan.textContent = '✉️';
+                } else {
+                    iconSpan.textContent = '🔔';
+                }
+                notificationItem.appendChild(iconSpan);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'content';
+
+                const messageP = document.createElement('p');
+                messageP.className = 'message';
+                messageP.textContent = notification.message;
+                contentDiv.appendChild(messageP);
+
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'time';
+                timeSpan.textContent = notification.time;
+                contentDiv.appendChild(timeSpan);
+
+                notificationItem.appendChild(contentDiv);
+                notificationList.appendChild(notificationItem);
+            });
+        }
+    </script>
+</body>
+</html>

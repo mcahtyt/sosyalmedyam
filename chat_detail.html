@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya - Sohbet</title>
+    <style>
+        /* Instagram Temalı Renk Paleti */
+        :root {
+            --primary-bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --border-color: #DBDBDB;
+            --text-primary: #262626;
+            --text-secondary: #8E8E8E;
+            --accent-blue: #0095F6;
+            --accent-blue-hover: #007ACC;
+            --button-text-light: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --error-red: #ED4956;
+        }
+
+        /* Genel CSS Ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header (Üst Menü) */
+        .header {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .header nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .header nav a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--primary-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .chat-header .back-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5em;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .chat-header .back-button:hover {
+            color: var(--text-secondary);
+        }
+
+        .chat-header .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            margin-right: 10px;
+        }
+
+        .chat-header .username {
+            font-weight: bold;
+            color: var(--text-primary);
+            font-size: 1.2em;
+        }
+
+        /* Mesaj Kutusu */
+        .messages-box {
+            flex-grow: 1;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto; /* Mesajlar taştığında kaydırma çubuğu */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 500px; /* Maksimum yükseklik */
+            border: 1px solid var(--border-color);
+        }
+
+        .message-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .message-item.sent {
+            justify-content: flex-end; /* Gönderilen mesajları sağa hizala */
+        }
+
+        .message-item.received {
+            justify-content: flex-start; /* Alınan mesajları sola hizala */
+        }
+
+        .message-item .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            line-height: 1.4;
+            word-wrap: break-word; /* Uzun kelimeleri böl */
+            font-size: 0.95em;
+        }
+
+        .message-item.sent .message-content {
+            background-color: var(--accent-blue); /* Gönderilen mesaj arka planı */
+            color: var(--button-text-light);
+            border-bottom-right-radius: 4px; /* Hafif yuvarlatılmış */
+            border-top-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+            border-top-left-radius: 15px;
+        }
+
+        .message-item.received .message-content {
+            background-color: var(--border-color); /* Alınan mesaj arka planı */
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px; /* Hafif yuvarlatılmış */
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            border-top-left-radius: 15px;
+        }
+
+        .message-item .sender-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Mesaj Gönderme Alanı */
+        .message-input-area {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .message-input-area input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .message-input-area input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+
+        .message-input-area button {
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 0;
+        }
+
+        .message-input-area button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Footer (Alt Menü) */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            font-size: 0.85em;
+        }
+
+        /* Mesaj kutusu stilleri */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 25px 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.1em;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            box-shadow: none;
+        }
+
+        .message-box button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Üst Menü (Header) -->
+    <header class="header">
+        <div class="logo">onelupp</div>
+        <nav>
+            <a href="home.html">Akış</a>
+            <a href="explore.html">Keşfet</a>
+            <a href="upload.html">Gönderi Oluştur</a>
+            <a href="messages.html">Mesajlar</a>
+            <a href="profile.html">Profilim</a>
+            <a href="#" id="logoutBtn">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <div class="chat-header">
+            <button class="back-button" onclick="window.location.href='messages.html'">&#8592;</button> <!-- Geri butonu -->
+            <img id="otherUserPic" src="https://placehold.co/40x40/DBDBDB/262626?text=PP" alt="Profil Resmi" class="profile-pic">
+            <span id="otherUsername" class="username">Kullanıcı Adı</span>
+        </div>
+
+        <div id="messagesBox" class="messages-box">
+            <!-- Mesajlar buraya JavaScript ile yüklenecek -->
+            <p style="text-align: center; color: var(--text-secondary);" id="noMessagesMessage">Henüz hiç mesaj yok. İlk mesajı siz gönderin!</p>
+        </div>
+
+        <div class="message-input-area">
+            <input type="text" id="messageInput" placeholder="Mesaj yaz...">
+            <button id="sendMessageBtn">Gönder</button>
+        </div>
+    </main>
+
+    <!-- Alt Menü (Footer) -->
+    <footer class="footer">
+        <p>&copy; 2025 Sosyal Medyam. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Özel mesaj kutusu -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="closeMessageBox">Tamam</button>
+    </div>
+
+    <script>
+        // --- Ortak Yardımcı Fonksiyonlar ---
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBoxBtn = document.getElementById('closeMessageBox');
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        closeMessageBoxBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
+
+        function getUsers() {
+            const usersJson = localStorage.getItem('social_media_users');
+            return usersJson ? JSON.parse(usersJson) : [];
+        }
+
+        function getChats() {
+            const chatsJson = localStorage.getItem('social_media_chats');
+            return chatsJson ? JSON.parse(chatsJson) : [];
+        }
+
+        function saveChats(chats) {
+            localStorage.setItem('social_media_chats', JSON.stringify(chats));
+        }
+
+        function getLoggedInUser() {
+            const loggedInUserJson = localStorage.getItem('loggedInUser');
+            return loggedInUserJson ? JSON.parse(loggedInUserJson) : null;
+        }
+
+        // --- Sayfa Yükleme ve Kullanıcı Kontrolü ---
+        let currentUser = null;
+        let currentChatId = null;
+        let currentChat = null;
+        let otherUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentUser = getLoggedInUser();
+            if (!currentUser) {
+                window.location.href = 'index.html'; // Giriş yapmamışsa yönlendir
+                return;
+            }
+
+            // URL'den sohbet ID'sini al
+            const urlParams = new URLSearchParams(window.location.search);
+            currentChatId = urlParams.get('chatId');
+
+            if (!currentChatId) {
+                showMessage('Sohbet ID\'si bulunamadı. Mesajlar sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'messages.html';
+                }, 1500);
+                return;
+            }
+
+            currentChat = getChats().find(chat => chat.id === currentChatId);
+
+            if (!currentChat || !currentChat.participants.includes(currentUser.id)) {
+                showMessage('Geçersiz sohbet veya erişim izni yok. Mesajlar sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'messages.html';
+                }, 1500);
+                return;
+            }
+
+            // Diğer kullanıcıyı bul
+            const otherParticipantId = currentChat.participants.find(id => id !== currentUser.id);
+            otherUser = getUsers().find(u => u.id === otherParticipantId);
+
+            if (otherUser) {
+                document.getElementById('otherUserPic').src = otherUser.profilePic || 'https://placehold.co/40x40/DBDBDB/262626?text=PP';
+                document.getElementById('otherUsername').textContent = otherUser.username;
+            } else {
+                document.getElementById('otherUsername').textContent = 'Bilinmeyen Kullanıcı';
+            }
+
+            loadMessages(); // Mesajları yükle
+
+            // Çıkış Yap butonu işlevi
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('loggedInUser');
+                showMessage('Çıkış yapıldı. Giriş sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            });
+
+            // Mesaj gönderme butonu işlevi
+            document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+
+        // --- Mesajları Yükleme ve Görüntüleme ---
+        function loadMessages() {
+            const messagesBox = document.getElementById('messagesBox');
+            const noMessagesMessage = document.getElementById('noMessagesMessage');
+
+            if (currentChat.messages.length === 0) {
+                noMessagesMessage.style.display = 'block';
+                messagesBox.innerHTML = ''; // Temizle
+                messagesBox.appendChild(noMessagesMessage); // Mesajı tekrar ekle
+                return;
+            } else {
+                noMessagesMessage.style.display = 'none';
+            }
+
+            messagesBox.innerHTML = ''; // Önceki mesajları temizle
+
+            currentChat.messages.forEach(msg => {
+                const messageItem = document.createElement('div');
+                messageItem.className = `message-item ${msg.senderId === currentUser.id ? 'sent' : 'received'}`;
+
+                const senderPic = document.createElement('img');
+                senderPic.className = 'sender-pic';
+                senderPic.src = (msg.senderId === currentUser.id ? currentUser.profilePic : otherUser.profilePic) || 'https://placehold.co/30x30/DBDBDB/262626?text=PP';
+                senderPic.alt = 'Profil Resmi';
+
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageContent.textContent = msg.text;
+
+                if (msg.senderId === currentUser.id) {
+                    messageItem.appendChild(messageContent);
+                    messageItem.appendChild(senderPic);
+                } else {
+                    messageItem.appendChild(senderPic);
+                    messageItem.appendChild(messageContent);
+                }
+                messagesBox.appendChild(messageItem);
+            });
+
+            // Mesaj kutusunu en alta kaydır
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+
+        // --- Mesaj Gönderme İşlevi ---
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+
+            if (messageText === '') {
+                showMessage('Boş mesaj gönderilemez.');
+                return;
+            }
+
+            const newMessage = {
+                senderId: currentUser.id,
+                text: messageText,
+                timestamp: new Date().toISOString()
+            };
+
+            currentChat.messages.push(newMessage); // Mevcut sohbete yeni mesajı ekle
+            saveChats(getChats().map(chat => chat.id === currentChat.id ? currentChat : chat)); // localStorage'ı güncelle
+
+            messageInput.value = ''; // Giriş alanını temizle
+            loadMessages(); // Mesajları yeniden yükle
+        }
+    </script>
+</body>
+</html>

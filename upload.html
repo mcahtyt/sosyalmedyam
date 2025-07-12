@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya - Gönderi Oluştur</title>
+    <style>
+        /* Instagram Temalı Renk Paleti */
+        :root {
+            --primary-bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --border-color: #DBDBDB;
+            --text-primary: #262626;
+            --text-secondary: #8E8E8E;
+            --accent-blue: #0095F6;
+            --accent-blue-hover: #007ACC;
+            --button-text-light: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --error-red: #ED4956;
+        }
+
+        /* Genel CSS Ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header (Üst Menü) */
+        .header {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .header nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .header nav a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 20px;
+            max-width: 700px;
+            margin: 20px auto;
+            background-color: var(--primary-bg);
+            border-radius: 8px;
+        }
+
+        .main-content h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* Gönderi Formu */
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .upload-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .upload-form input[type="url"],
+        .upload-form textarea {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            resize: vertical; /* Dikeyde yeniden boyutlandırma */
+            min-height: 80px;
+        }
+
+        .upload-form input[type="url"]:focus,
+        .upload-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+
+        .upload-form button {
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .upload-form button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Footer (Alt Menü) */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            font-size: 0.85em;
+        }
+
+        /* Mesaj kutusu stilleri */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 25px 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.1em;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            box-shadow: none;
+        }
+
+        .message-box button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Üst Menü (Header) -->
+    <header class="header">
+        <div class="logo">Sosyal Medyam</div>
+        <nav>
+            <a href="home.html">Akış</a>
+            <a href="explore.html">Keşfet</a>
+            <a href="upload.html">Gönderi Oluştur</a>
+            <a href="messages.html">Mesajlar</a>
+            <a href="profile.html">Profilim</a>
+            <a href="#" id="logoutBtn">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <h1>Yeni Gönderi Oluştur</h1>
+        <form id="uploadForm" class="upload-form">
+            <div class="input-group">
+                <label for="imageUrl">Resim URL'si:</label>
+                <input type="url" id="imageUrl" placeholder="Resmin internet adresini yapıştırın (örn: https://example.com/resim.jpg)" required>
+            </div>
+            <div class="input-group">
+                <label for="caption">Açıklama:</label>
+                <textarea id="caption" placeholder="Gönderiniz için bir açıklama yazın..." rows="4"></textarea>
+            </div>
+            <button type="submit">Gönderiyi Paylaş</button>
+        </form>
+    </main>
+
+    <!-- Alt Menü (Footer) -->
+    <footer class="footer">
+        <p>&copy; 2025 Sosyal Medyam. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Özel mesaj kutusu -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="closeMessageBox">Tamam</button>
+    </div>
+
+    <script>
+        // --- Ortak Yardımcı Fonksiyonlar ---
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBoxBtn = document.getElementById('closeMessageBox');
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        closeMessageBoxBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
+
+        function getPosts() {
+            const postsJson = localStorage.getItem('social_media_posts');
+            return postsJson ? JSON.parse(postsJson) : [];
+        }
+
+        function savePosts(posts) {
+            localStorage.setItem('social_media_posts', JSON.stringify(posts));
+        }
+
+        function getLoggedInUser() {
+            const loggedInUserJson = localStorage.getItem('loggedInUser');
+            return loggedInUserJson ? JSON.parse(loggedInUserJson) : null;
+        }
+
+        function getUsers() { // Kullanıcı listesini de güncellemek için eklendi
+            const usersJson = localStorage.getItem('social_media_users');
+            return usersJson ? JSON.parse(usersJson) : [];
+        }
+
+        // --- Sayfa Yükleme ve Kullanıcı Kontrolü ---
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentUser = getLoggedInUser();
+            if (!currentUser) {
+                window.location.href = 'index.html'; // Giriş yapmamışsa yönlendir
+                return;
+            }
+
+            // Çıkış Yap butonu işlevi
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('loggedInUser');
+                showMessage('Çıkış yapıldı. Giriş sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            });
+
+            // Form gönderim olay dinleyicisi
+            document.getElementById('uploadForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                handlePostUpload();
+            });
+        });
+
+        // --- Gönderi Yükleme İşlevi ---
+        function handlePostUpload() {
+            const imageUrl = document.getElementById('imageUrl').value;
+            const caption = document.getElementById('caption').value;
+
+            if (!imageUrl) {
+                showMessage('Lütfen bir resim URL\'si girin.');
+                return;
+            }
+
+            const allPosts = getPosts();
+            const newPost = {
+                id: Date.now().toString(), // Benzersiz gönderi ID'si
+                userId: currentUser.id,
+                username: currentUser.username,
+                userProfilePic: currentUser.profilePic, // Kullanıcının profil resmini de kaydet
+                imageUrl: imageUrl,
+                caption: caption,
+                timestamp: new Date().toISOString(), // Gönderi zamanı
+                likes: [], // Beğenen kullanıcı ID'leri
+                comments: [] // Yorumlar
+            };
+
+            allPosts.push(newPost);
+            savePosts(allPosts); // Gönderileri localStorage'a kaydet
+
+            // Kullanıcının kendi gönderi listesini de güncelle
+            currentUser.posts = currentUser.posts || [];
+            currentUser.posts.push(newPost.id); // Sadece gönderi ID'sini sakla
+            
+            // Kullanıcı listesindeki kullanıcının da gönderi listesini güncelle
+            let users = getUsers();
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex].posts = currentUser.posts;
+                localStorage.setItem('social_media_users', JSON.stringify(users));
+            }
+            localStorage.setItem('loggedInUser', JSON.stringify(currentUser)); // Güncel kullanıcıyı kaydet
+
+            showMessage('Gönderiniz başarıyla paylaşıldı!');
+            document.getElementById('uploadForm').reset(); // Formu temizle
+            
+            // Kullanıcıyı akış sayfasına yönlendir
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

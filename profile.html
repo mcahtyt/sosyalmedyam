@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya - Profilim</title>
+    <style>
+        /* Instagram Temalı Renk Paleti */
+        :root {
+            --primary-bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --border-color: #DBDBDB;
+            --text-primary: #262626;
+            --text-secondary: #8E8E8E;
+            --accent-blue: #0095F6;
+            --accent-blue-hover: #007ACC;
+            --button-text-light: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --error-red: #ED4956;
+        }
+
+        /* Genel CSS Ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header (Üst Menü) */
+        .header {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .header nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .header nav a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 20px;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: var(--primary-bg);
+            border-radius: 8px;
+        }
+
+        .main-content h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* Profil Bilgileri Bölümü */
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-info .profile-pic-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .profile-info .username {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .profile-info .bio {
+            font-size: 1em;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .profile-stats div {
+            text-align: center;
+            font-size: 1em;
+            color: var(--text-primary);
+        }
+
+        .profile-stats div span {
+            display: block;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        /* Profil Düzenleme Butonu */
+        .edit-profile-button {
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+        }
+
+        .edit-profile-button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Gönderi Kartları (Profildeki) */
+        .profile-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .post-card-small {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden; /* Resmin taşmasını engelle */
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .post-card-small:hover {
+            transform: scale(1.03);
+        }
+
+        .post-card-small img {
+            width: 100%;
+            height: 200px; /* Sabit yükseklik */
+            object-fit: cover; /* Resmi kutuya sığdır */
+            display: block;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .post-card-small .post-caption-preview {
+            padding: 15px;
+            font-size: 0.9em;
+            color: var(--text-primary);
+            white-space: nowrap; /* Metni tek satırda tut */
+            overflow: hidden; /* Taşan metni gizle */
+            text-overflow: ellipsis; /* Taşan metin için üç nokta göster */
+        }
+
+        /* Footer (Alt Menü) */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            font-size: 0.85em;
+        }
+
+        /* Mesaj kutusu stilleri */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 25px 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.1em;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            box-shadow: none;
+        }
+
+        .message-box button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Üst Menü (Header) -->
+    <header class="header">
+        <div class="logo">Sosyal Medyam</div>
+        <nav>
+            <a href="home.html">Akış</a>
+            <a href="explore.html">Keşfet</a>
+            <a href="upload.html">Gönderi Oluştur</a>
+            <a href="messages.html">Mesajlar</a>
+            <a href="profile.html">Profilim</a>
+            <a href="#" id="logoutBtn">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <h1>Profilim</h1>
+        <div class="profile-info">
+            <img id="profilePic" src="https://placehold.co/120x120/DBDBDB/262626?text=PP" alt="Profil Resmi" class="profile-pic-large">
+            <h2 id="profileUsername" class="username">Kullanıcı Adı</h2>
+            <p id="profileBio" class="bio">Kısa biyografi buraya gelecek.</p>
+            
+            <div class="profile-stats">
+                <div><span id="postCount">0</span> Gönderi</div>
+                <div><span id="followerCount">0</span> Takipçi</div>
+                <div><span id="followingCount">0</span> Takip Edilen</div>
+            </div>
+            <button id="editProfileBtn" class="edit-profile-button">Profili Düzenle</button>
+        </div>
+
+        <h2>Gönderilerim</h2>
+        <div id="myPostsGrid" class="profile-posts-grid">
+            <!-- Kullanıcının gönderileri buraya yüklenecek -->
+            <p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary);" id="noMyPostsMessage">Henüz hiç gönderiniz yok. İlk gönderinizi oluşturun!</p>
+        </div>
+    </main>
+
+    <!-- Alt Menü (Footer) -->
+    <footer class="footer">
+        <p>&copy; 2025 Sosyal Medyam. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Özel mesaj kutusu -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="closeMessageBox">Tamam</button>
+    </div>
+
+    <script>
+        // --- Ortak Yardımcı Fonksiyonlar ---
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBoxBtn = document.getElementById('closeMessageBox');
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        closeMessageBoxBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
+
+        function getUsers() {
+            const usersJson = localStorage.getItem('social_media_users');
+            return usersJson ? JSON.parse(usersJson) : [];
+        }
+
+        function getPosts() {
+            const postsJson = localStorage.getItem('social_media_posts');
+            return postsJson ? JSON.parse(postsJson) : [];
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('social_media_users', JSON.stringify(users));
+        }
+
+        function getLoggedInUser() {
+            const loggedInUserJson = localStorage.getItem('loggedInUser');
+            return loggedInUserJson ? JSON.parse(loggedInUserJson) : null;
+        }
+
+        function updateLoggedInUserInLocalStorage(updatedUser) {
+            localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+            // Ayrıca genel kullanıcı listesini de güncelle
+            let users = getUsers();
+            const userIndex = users.findIndex(u => u.id === updatedUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = updatedUser;
+                saveUsers(users);
+            }
+        }
+
+        // --- Sayfa Yükleme ve Kullanıcı Kontrolü ---
+        let currentUser = null; // Mevcut giriş yapmış kullanıcı
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentUser = getLoggedInUser();
+            if (!currentUser) {
+                window.location.href = 'index.html'; // Giriş yapmamışsa yönlendir
+                return;
+            }
+
+            displayProfileInfo();
+            loadMyPosts();
+
+            // Çıkış Yap butonu işlevi
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('loggedInUser');
+                showMessage('Çıkış yapıldı. Giriş sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            });
+
+            // Profil Düzenle butonu işlevi (şimdilik sadece mesaj gösterir)
+            document.getElementById('editProfileBtn').addEventListener('click', () => {
+                // showMessage('Profil düzenleme özelliği henüz geliştiriliyor!');
+                // Gerçek bir uygulamada burada bir modal açılır veya edit_profile.html sayfasına yönlendirilir.
+                window.location.href = 'settings.html';
+            });
+        });
+
+        // --- Profil Bilgilerini Görüntüleme ---
+        function displayProfileInfo() {
+            document.getElementById('profilePic').src = currentUser.profilePic || 'https://placehold.co/120x120/DBDBDB/262626?text=PP';
+            document.getElementById('profileUsername').textContent = currentUser.username;
+            document.getElementById('profileBio').textContent = currentUser.bio || 'Henüz bir biyografi yok.';
+            document.getElementById('postCount').textContent = currentUser.posts ? currentUser.posts.length : 0;
+            document.getElementById('followerCount').textContent = currentUser.followers ? currentUser.followers.length : 0;
+            document.getElementById('followingCount').textContent = currentUser.following ? currentUser.following.length : 0;
+        }
+
+        // --- Kendi Gönderilerini Yükleme ve Görüntüleme ---
+        function loadMyPosts() {
+            const myPostsGrid = document.getElementById('myPostsGrid');
+            const noMyPostsMessage = document.getElementById('noMyPostsMessage');
+            const allPosts = getPosts();
+            
+            // Sadece mevcut kullanıcının gönderilerini filtrele
+            const myPosts = allPosts.filter(post => post.userId === currentUser.id);
+            myPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Yeniden eskiye sırala
+
+            if (myPosts.length === 0) {
+                noMyPostsMessage.style.display = 'block';
+                return;
+            } else {
+                noMyPostsMessage.style.display = 'none';
+            }
+
+            myPostsGrid.innerHTML = ''; // Önceki gönderileri temizle
+
+            myPosts.forEach(post => {
+                const postCardSmall = document.createElement('div');
+                postCardSmall.className = 'post-card-small';
+                postCardSmall.dataset.postId = post.id; // Gönderi ID'sini sakla
+
+                const postImage = document.createElement('img');
+                postImage.src = post.imageUrl || 'https://placehold.co/250x200/DBDBDB/8E8E8E?text=Resim+Yok';
+                postImage.alt = post.caption || 'Gönderi Resmi';
+                postImage.onerror = function() {
+                    this.src = 'https://placehold.co/250x200/DBDBDB/8E8E8E?text=Resim+Yüklenemedi';
+                };
+                postCardSmall.appendChild(postImage);
+
+                const postCaptionPreview = document.createElement('p');
+                postCaptionPreview.className = 'post-caption-preview';
+                postCaptionPreview.textContent = post.caption;
+                postCardSmall.appendChild(postCaptionPreview);
+
+                // Gönderiye tıklanınca detay sayfasına gitme (şimdilik mesaj gösterir)
+                postCardSmall.addEventListener('click', () => {
+                    showMessage(`Gönderi detayı özelliği henüz geliştiriliyor! Gönderi ID: ${post.id}`);
+                    // Gerçek uygulamada window.location.href = `post_detail.html?postId=${post.id}`;
+                });
+
+                myPostsGrid.appendChild(postCardSmall);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya - Akış</title>
+    <style>
+        /* Instagram Temalı Renk Paleti */
+        :root {
+            --primary-bg: #FAFAFA; /* Açık arka plan */
+            --card-bg: #FFFFFF; /* Kart/konteyner arka planı */
+            --border-color: #DBDBDB; /* Kenarlık rengi */
+            --text-primary: #262626; /* Koyu metin */
+            --text-secondary: #8E8E8E; /* İkincil metin */
+            --accent-blue: #0095F6; /* Instagram mavisi */
+            --accent-blue-hover: #007ACC; /* Instagram mavisi hover */
+            --button-text-light: #FFFFFF; /* Buton metni (açık) */
+            --shadow-color: rgba(0, 0, 0, 0.1); /* Gölge rengi */
+            --error-red: #ED4956; /* Hata mesajı rengi */
+        }
+
+        /* Genel CSS Ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg); /* Açık gri arka plan */
+            color: var(--text-primary); /* Koyu metin */
+            display: flex;
+            flex-direction: column; /* Dikey düzen */
+            min-height: 100vh;
+        }
+
+        /* Header (Üst Menü) */
+        .header {
+            background-color: var(--card-bg); /* Beyaz arka plan */
+            color: var(--text-primary);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between; /* Öğeleri iki yana yasla */
+            align-items: center;
+            border-bottom: 1px solid var(--border-color); /* İnce alt çizgi */
+            box-shadow: 0 2px 5px var(--shadow-color); /* Hafif gölge */
+            position: sticky; /* Sayfa kaydırıldığında üstte kalır */
+            top: 0;
+            z-index: 100;
+        }
+
+        .header .logo {
+            font-size: 1.5em; /* Logo boyutu */
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .header nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .header nav a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex-grow: 1; /* Kalan alanı kapla */
+            padding: 30px 20px;
+            max-width: 600px; /* İçerik genişliğini sınırla */
+            margin: 20px auto; /* Ortala */
+            background-color: var(--primary-bg); /* Açık arka plan */
+            border-radius: 8px;
+        }
+
+        .main-content h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* Gönderi Oluştur Butonu */
+        .create-post-button {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 30px auto;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .create-post-button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Gönderi Kartları */
+        .post-card {
+            background-color: var(--card-bg); /* Beyaz kart arka planı */
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative; /* Üç nokta menüsü için */
+        }
+
+        .post-header .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .post-header .username {
+            font-weight: bold;
+            color: var(--text-primary);
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        /* Üç nokta menü butonu */
+        .post-options-button {
+            background: none;
+            border: none;
+            font-size: 1.5em; /* Üç noktanın boyutu */
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 5px;
+        }
+
+        .post-options-button:hover {
+            color: var(--text-primary);
+        }
+
+        /* Menü açılır listesi */
+        .post-options-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            list-style: none;
+            padding: 5px 0;
+            margin: 0;
+            z-index: 10;
+            min-width: 120px;
+            display: none; /* Varsayılan olarak gizli */
+        }
+
+        .post-options-menu.active {
+            display: block; /* Aktif olduğunda göster */
+        }
+
+        .post-options-menu li {
+            padding: 8px 15px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+
+        .post-options-menu li:hover {
+            background-color: var(--primary-bg);
+        }
+
+        .post-options-menu li.delete-option {
+            color: var(--error-red); /* Silme seçeneği kırmızı olsun */
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 500px; /* Maksimum yükseklik */
+            object-fit: contain; /* Resmi kutuya sığdır */
+            border-radius: 4px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-caption {
+            font-size: 1em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        /* Düzenleme modu için açıklama inputu */
+        .edit-caption-input {
+            width: calc(100% - 20px); /* Padding'i hesaba kat */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box; /* Padding'in genişliğe dahil olmasını sağla */
+        }
+
+        .post-timestamp {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: -10px; /* Açıklamayla arayı kapat */
+            margin-bottom: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: flex-start; /* Sola hizala */
+            gap: 15px; /* Butonlar arası boşluk */
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            align-items: center; /* Butonları dikeyde ortala */
+        }
+
+        .post-actions button {
+            background: none;
+            border: none;
+            color: var(--text-secondary); /* Gri ikon rengi */
+            font-size: 1.2em; /* İkon boyutu */
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+            padding: 5px; /* İç boşluk */
+            border-radius: 5px;
+            box-shadow: none; /* Buton stilini sıfırla */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* İkon ve metin arası boşluk */
+        }
+
+        .post-actions button:hover {
+            color: var(--accent-blue); /* Maviye dön */
+            transform: scale(1.1);
+            background-color: transparent; /* Arka planı şeffaf tut */
+        }
+
+        /* Yeni Yorum Bölümü CSS'i */
+        .comments-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .comments-list {
+            margin-bottom: 15px;
+            max-height: 200px; /* Maksimum yorum listesi yüksekliği */
+            overflow-y: auto; /* Scroll bar ekle */
+        }
+
+        .comment-item {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            flex-wrap: wrap; /* Uzun yorumlarda metnin alt satıra geçmesini sağla */
+        }
+
+        .comment-item .comment-username {
+            font-weight: bold;
+            margin-right: 5px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .comment-item .comment-text {
+            color: var(--text-primary);
+            word-break: break-word; /* Uzun kelimelerin taşmasını engelle */
+            flex-grow: 1; /* Metnin kalan alanı doldurmasını sağla */
+        }
+
+        .view-all-comments {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-align: left;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .view-all-comments:hover {
+            text-decoration: underline;
+        }
+
+        .comment-input-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .comment-input-form input[type="text"] {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 0.9em;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+        }
+
+        .comment-input-form button {
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* Buton metninin tek satırda kalmasını sağlar */
+        }
+
+        .comment-input-form button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none; /* Transform'u kaldır, sadece background değişsin */
+        }
+
+        /* Footer (Alt Menü) */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto; /* En alta it */
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            font-size: 0.85em;
+        }
+
+        /* Mesaj kutusu stilleri */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 25px 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.1em;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: var(--accent-blue);
+            color: var(--button-text-light);
+            box-shadow: none;
+        }
+
+        .message-box button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">güvercin</div>
+        <nav>
+            <a href="home.html">Akış</a>
+            <a href="explore.html">Keşfet</a>
+            <a href="upload.html">Gönderi Oluştur</a>
+            <a href="messages.html">Mesajlar</a>
+            <a href="profile.html">Profilim</a>
+            <a href="#" id="logoutBtn">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <h1>Akışınız</h1>
+        <a href="upload.html" class="create-post-button">Yeni Gönderi Oluştur</a>
+        <div id="postsContainer">
+            <p style="text-align: center; color: var(--text-secondary);" id="noPostsMessage">Henüz hiç gönderi yok. İlk gönderiyi siz oluşturun!</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 onelupp. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="closeMessageBox">Tamam</button>
+    </div>
+
+    <script>
+        // --- Ortak Yardımcı Fonksiyonlar ---
+        // Mesaj kutusunu gösteren fonksiyon
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBoxBtn = document.getElementById('closeMessageBox');
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        closeMessageBoxBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
+
+        // Kullanıcıları localStorage'dan yükle
+        function getUsers() {
+            const usersJson = localStorage.getItem('social_media_users');
+            return usersJson ? JSON.parse(usersJson) : [];
+        }
+
+        // Gönderileri localStorage'dan yükle
+        function getPosts() {
+            const postsJson = localStorage.getItem('social_media_posts');
+            return postsJson ? JSON.parse(postsJson) : [];
+        }
+
+        // Gönderileri localStorage'a kaydet
+        function savePosts(posts) {
+            localStorage.setItem('social_media_posts', JSON.stringify(posts));
+        }
+
+        // Oturum açmış kullanıcıyı al
+        function getLoggedInUser() {
+            const loggedInUserJson = localStorage.getItem('loggedInUser');
+            return loggedInUserJson ? JSON.parse(loggedInUserJson) : null;
+        }
+
+        // --- Sayfa Yükleme ve Kullanıcı Kontrolü ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = getLoggedInUser();
+            if (!loggedInUser) {
+                // Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Çıkış Yap butonu işlevi
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('loggedInUser'); // Oturumu kapat
+                showMessage('Çıkış yapıldı. Giriş sayfasına yönlendiriliyorsunuz.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            });
+
+            loadPosts(); // Gönderileri yükle
+        });
+
+        // --- Gönderileri Yükleme ve Görüntüleme ---
+        function loadPosts() {
+            const postsContainer = document.getElementById('postsContainer');
+            const noPostsMessage = document.getElementById('noPostsMessage');
+            let allPosts = getPosts(); // Tüm gönderileri al
+            const loggedInUser = getLoggedInUser();
+
+            // Gönderileri en yeniden en eskiye sırala
+            allPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (allPosts.length === 0) {
+                noPostsMessage.style.display = 'block'; // Mesajı göster
+                postsContainer.innerHTML = ''; // İçeriği temizle
+                return;
+            } else {
+                noPostsMessage.style.display = 'none'; // Mesajı gizle
+            }
+
+            postsContainer.innerHTML = ''; // Önceki gönderileri temizle
+
+            allPosts.forEach(post => {
+                const postCard = document.createElement('div');
+                postCard.className = 'post-card';
+                postCard.dataset.postId = post.id; // Gönderi ID'sini sakla
+
+                // Gönderi başlığı: Profil resmi ve kullanıcı adı
+                const postHeader = document.createElement('div');
+                postHeader.className = 'post-header';
+                
+                const profilePic = document.createElement('img');
+                profilePic.className = 'profile-pic';
+                profilePic.src = post.userProfilePic || 'https://placehold.co/40x40/DBDBDB/262626?text=PP'; 
+                profilePic.alt = post.username + ' Profil Resmi';
+                profilePic.addEventListener('click', () => {
+                    if (loggedInUser && loggedInUser.id === post.userId) {
+                        window.location.href = 'profile.html';
+                    } else {
+                        window.location.href = `user_profile.html?userId=${post.userId}`;
+                    }
+                });
+
+                const usernameSpan = document.createElement('span');
+                usernameSpan.className = 'username';
+                usernameSpan.textContent = post.username;
+                usernameSpan.addEventListener('click', () => {
+                    if (loggedInUser && loggedInUser.id === post.userId) {
+                        window.location.href = 'profile.html';
+                    } else {
+                        window.location.href = `user_profile.html?userId=${post.userId}`;
+                    }
+                });
+
+                postHeader.appendChild(profilePic);
+                postHeader.appendChild(usernameSpan);
+
+                // Gönderi seçenekleri butonu (üç nokta)
+                if (loggedInUser && loggedInUser.id === post.userId) {
+                    const optionsButton = document.createElement('button');
+                    optionsButton.className = 'post-options-button';
+                    optionsButton.textContent = '•••'; // Üç nokta
+                    optionsButton.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Event'ın yayılmasını durdur
+                        const menu = postCard.querySelector('.post-options-menu');
+                        if (menu) {
+                            menu.classList.toggle('active');
+                        }
+                    });
+                    postHeader.appendChild(optionsButton);
+
+                    // Seçenekler menüsü
+                    const optionsMenu = document.createElement('ul');
+                    optionsMenu.className = 'post-options-menu';
+                    
+                    const editOption = document.createElement('li');
+                    editOption.textContent = 'Düzenle';
+                    editOption.addEventListener('click', () => editPost(post.id));
+                    optionsMenu.appendChild(editOption);
+
+                    const deleteOption = document.createElement('li');
+                    deleteOption.textContent = 'Sil';
+                    deleteOption.className = 'delete-option'; // Kırmızı stil için
+                    deleteOption.addEventListener('click', () => deletePost(post.id));
+                    optionsMenu.appendChild(deleteOption);
+
+                    postHeader.appendChild(optionsMenu);
+                }
+
+                postCard.appendChild(postHeader);
+
+                // Gönderi resmi
+                if (post.imageUrl) {
+                    const postImage = document.createElement('img');
+                    postImage.className = 'post-image';
+                    postImage.src = post.imageUrl;
+                    postImage.alt = post.caption || 'Gönderi Resmi';
+                    postImage.onerror = function() {
+                        this.src = 'https://placehold.co/600x400/DBDBDB/8E8E8E?text=Resim+Yüklenemedi';
+                    };
+                    postCard.appendChild(postImage);
+                }
+
+                // Gönderi açıklaması (veya düzenleme inputu)
+                const postCaptionElement = document.createElement('p');
+                postCaptionElement.className = 'post-caption';
+                postCaptionElement.innerHTML = `<span class="username" style="cursor: default;">${post.username}</span> ${post.caption || ''}`;
+                postCard.appendChild(postCaptionElement);
+                
+                // Gönderi zaman damgası
+                const postTimestamp = document.createElement('p');
+                postTimestamp.className = 'post-timestamp';
+                postTimestamp.textContent = new Date(post.timestamp).toLocaleString('tr-TR');
+                postCard.appendChild(postTimestamp);
+
+                // Gönderi etkileşim butonları (beğen, yorum yap)
+                const postActions = document.createElement('div');
+                postActions.className = 'post-actions';
+
+                const likeButton = document.createElement('button');
+                const hasLiked = post.likes && post.likes.includes(loggedInUser.id);
+                likeButton.innerHTML = `<span>${hasLiked ? '❤️' : '♡'}</span> Beğen (${post.likes ? post.likes.length : 0})`;
+                likeButton.addEventListener('click', () => toggleLike(post.id));
+                postActions.appendChild(likeButton);
+
+                const commentButton = document.createElement('button');
+                const commentCount = post.comments ? post.comments.length : 0;
+                commentButton.innerHTML = `<span>💬</span> Yorum Yap (${commentCount})`;
+                commentButton.addEventListener('click', () => toggleCommentSection(post.id));
+                postActions.appendChild(commentButton);
+
+                postCard.appendChild(postActions);
+
+                // Yorum Bölümü
+                const commentsSection = document.createElement('div');
+                commentsSection.className = 'comments-section';
+                commentsSection.id = `comments-section-${post.id}`;
+                commentsSection.style.display = 'none';
+
+                const commentsList = document.createElement('div');
+                commentsList.className = 'comments-list';
+                commentsList.id = `comments-list-${post.id}`;
+                commentsSection.appendChild(commentsList);
+
+                if (commentCount > 2) {
+                    const viewAllCommentsLink = document.createElement('p');
+                    viewAllCommentsLink.className = 'view-all-comments';
+                    viewAllCommentsLink.textContent = `Tüm ${commentCount} yorumu gör`;
+                    viewAllCommentsLink.addEventListener('click', () => toggleCommentSection(post.id, true));
+                    commentsSection.appendChild(viewAllCommentsLink);
+                }
+
+                // Yorum Ekleme Formu
+                const commentInputForm = document.createElement('form');
+                commentInputForm.className = 'comment-input-form';
+                commentInputForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const commentInput = commentInputForm.querySelector('input[type="text"]');
+                    addComment(post.id, commentInput.value);
+                    commentInput.value = '';
+                });
+
+                const commentInputField = document.createElement('input');
+                commentInputField.type = 'text';
+                commentInputField.placeholder = 'Yorumunuzu buraya yazın...';
+                commentInputField.required = true;
+                commentInputForm.appendChild(commentInputField);
+
+                const submitCommentButton = document.createElement('button');
+                submitCommentButton.type = 'submit';
+                submitCommentButton.textContent = 'Gönder';
+                commentInputForm.appendChild(submitCommentButton);
+
+                commentsSection.appendChild(commentInputForm);
+                postCard.appendChild(commentsSection);
+
+                postsContainer.appendChild(postCard);
+            });
+        }
+
+        // Beğenme/Beğenmeyi Kaldırma İşlevi
+        function toggleLike(postId) {
+            const loggedInUser = getLoggedInUser();
+            if (!loggedInUser) {
+                showMessage('Beğenmek için giriş yapmalısınız!');
+                return;
+            }
+
+            let allPosts = getPosts();
+            const postIndex = allPosts.findIndex(p => p.id === postId);
+
+            if (postIndex !== -1) {
+                const post = allPosts[postIndex];
+                if (!post.likes) {
+                    post.likes = [];
+                }
+                const userLikedIndex = post.likes.indexOf(loggedInUser.id);
+
+                if (userLikedIndex === -1) {
+                    post.likes.push(loggedInUser.id);
+                    showMessage('Gönderiyi beğendiniz!');
+                } else {
+                    post.likes.splice(userLikedIndex, 1);
+                    showMessage('Gönderiyi beğenmekten vazgeçtiniz!');
+                }
+                
+                savePosts(allPosts);
+                loadPosts();
+            }
+        }
+
+        // Yorum Bölümünü Açma/Kapama İşlevi
+        function toggleCommentSection(postId, showAll = false) {
+            const commentsSection = document.getElementById(`comments-section-${postId}`);
+            if (commentsSection) {
+                if (commentsSection.style.display === 'none' || showAll) {
+                    commentsSection.style.display = 'block';
+                    loadComments(postId);
+                } else {
+                    commentsSection.style.display = 'none';
+                }
+            }
+        }
+
+        // Yorumları Yükleme İşlevi
+        function loadComments(postId) {
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            commentsList.innerHTML = '';
+
+            const allPosts = getPosts();
+            const post = allPosts.find(p => p.id === postId);
+
+            if (post && post.comments && post.comments.length > 0) {
+                const sortedComments = [...post.comments].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                sortedComments.forEach(comment => {
+                    const commentItem = document.createElement('div');
+                    commentItem.className = 'comment-item';
+                    
+                    const commentUsername = document.createElement('span');
+                    commentUsername.className = 'comment-username';
+                    commentUsername.textContent = comment.username;
+                    commentUsername.addEventListener('click', () => {
+                        const loggedInUser = getLoggedInUser();
+                        if (loggedInUser && loggedInUser.id === comment.userId) {
+                            window.location.href = 'profile.html';
+                        } else {
+                            window.location.href = `user_profile.html?userId=${comment.userId}`;
+                        }
+                    });
+                    
+                    const commentText = document.createElement('span');
+                    commentText.className = 'comment-text';
+                    commentText.textContent = comment.text;
+
+                    commentItem.appendChild(commentUsername);
+                    commentItem.appendChild(commentText);
+                    commentsList.appendChild(commentItem);
+                });
+            } else {
+                commentsList.innerHTML = '<p style="font-size: 14px; color: var(--text-secondary);">Henüz yorum yok.</p>';
+            }
+        }
+
+        // Yorum Ekleme İşlevi
+        function addComment(postId, commentText) {
+            const loggedInUser = getLoggedInUser();
+            if (!loggedInUser) {
+                showMessage('Yorum yapmak için giriş yapmalısınız!');
+                return;
+            }
+
+            if (commentText.trim() === '') {
+                showMessage('Boş yorum yapılamaz.');
+                return;
+            }
+
+            let allPosts = getPosts();
+            const postIndex = allPosts.findIndex(p => p.id === postId);
+
+            if (postIndex !== -1) {
+                const post = allPosts[postIndex];
+                if (!post.comments) {
+                    post.comments = [];
+                }
+
+                const newComment = {
+                    id: Date.now().toString(),
+                    userId: loggedInUser.id,
+                    username: loggedInUser.username,
+                    text: commentText.trim(),
+                    timestamp: new Date().toISOString()
+                };
+
+                post.comments.push(newComment);
+                savePosts(allPosts);
+
+                showMessage('Yorumunuz eklendi!');
+                loadComments(postId);
+                loadPosts(); // UI'ı güncelle
+            }
+        }
+
+        // --- Yeni Özellik: Gönderiyi Düzenleme İşlevi ---
+        function editPost(postId) {
+            let allPosts = getPosts();
+            const postIndex = allPosts.findIndex(p => p.id === postId);
+            const loggedInUser = getLoggedInUser();
+
+            if (postIndex === -1 || !loggedInUser || allPosts[postIndex].userId !== loggedInUser.id) {
+                showMessage('Bu gönderiyi düzenleme yetkiniz yok.', true);
+                return;
+            }
+
+            const post = allPosts[postIndex];
+            const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+            const postCaptionElement = postCard.querySelector('.post-caption');
+
+            // Mevcut açıklama elementini input ile değiştir
+            const editInput = document.createElement('textarea');
+            editInput.className = 'edit-caption-input';
+            editInput.value = post.caption || '';
+            editInput.rows = 3; // Metin kutusunun yüksekliğini ayarla
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Kaydet';
+            saveButton.className = 'create-post-button'; // Mevcut buton stilini kullanabiliriz
+            saveButton.style.marginTop = '10px';
+            saveButton.style.display = 'inline-block';
+            saveButton.style.width = 'auto';
+            saveButton.style.marginRight = '10px';
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'İptal';
+            cancelButton.className = 'create-post-button';
+            cancelButton.style.backgroundColor = 'var(--text-secondary)'; // Gri renk
+            cancelButton.style.marginTop = '10px';
+            cancelButton.style.display = 'inline-block';
+            cancelButton.style.width = 'auto';
+
+            // Mevcut açıklamayı ve butonu gizle, düzenleme arayüzünü göster
+            postCaptionElement.style.display = 'none';
+            // postActions.style.display = 'none'; // Etkileşim butonlarını gizleme (isteğe bağlı)
+
+            postCaptionElement.parentNode.insertBefore(editInput, postCaptionElement.nextSibling);
+            editInput.parentNode.insertBefore(saveButton, editInput.nextSibling);
+            editInput.parentNode.insertBefore(cancelButton, saveButton.nextSibling);
+
+
+            saveButton.addEventListener('click', () => {
+                post.caption = editInput.value.trim();
+                savePosts(allPosts);
+                showMessage('Gönderi başarıyla güncellendi!');
+                loadPosts(); // UI'ı yeniden yükle
+            });
+
+            cancelButton.addEventListener('click', () => {
+                loadPosts(); // UI'ı yeniden yükle (değişiklikleri iptal et)
+            });
+
+            // Menüyü kapat
+            const menu = postCard.querySelector('.post-options-menu');
+            if (menu) {
+                menu.classList.remove('active');
+            }
+        }
+
+        // --- Yeni Özellik: Gönderiyi Silme İşlevi ---
+        function deletePost(postId) {
+            const loggedInUser = getLoggedInUser();
+            if (!loggedInUser) {
+                showMessage('Bu gönderiyi silme yetkiniz yok.', true);
+                return;
+            }
+
+            let allPosts = getPosts();
+            const postToDeleteIndex = allPosts.findIndex(p => p.id === postId && p.userId === loggedInUser.id);
+
+            if (postToDeleteIndex !== -1) {
+                if (confirm('Bu gönderiyi kalıcı olarak silmek istediğinizden emin misiniz?')) {
+                    allPosts.splice(postToDeleteIndex, 1); // Gönderiyi diziden kaldır
+                    savePosts(allPosts); // localStorage'ı güncelle
+
+                    // Kullanıcının kendi gönderi listesinden de sil
+                    let users = getUsers();
+                    const userIndex = users.findIndex(u => u.id === loggedInUser.id);
+                    if (userIndex !== -1) {
+                        users[userIndex].posts = users[userIndex].posts.filter(id => id !== postId);
+                        localStorage.setItem('social_media_users', JSON.stringify(users));
+                        localStorage.setItem('loggedInUser', JSON.stringify(users[userIndex])); // Oturumdaki kullanıcıyı da güncelle
+                    }
+
+                    showMessage('Gönderi başarıyla silindi.');
+                    loadPosts(); // Akışı yeniden yükle
+                }
+            } else {
+                showMessage('Bu gönderiyi silme yetkiniz yok veya gönderi bulunamadı.', true);
+            }
+            // Menüyü kapat
+            const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postCard) {
+                const menu = postCard.querySelector('.post-options-menu');
+                if (menu) {
+                    menu.classList.remove('active');
+                }
+            }
+        }
+
+        // Tıklanan eleman menü değilse veya menü içindeyse menüyü kapat
+        document.addEventListener('click', (event) => {
+            document.querySelectorAll('.post-options-menu').forEach(menu => {
+                const button = menu.previousElementSibling; // Üç nokta butonu
+                if (!menu.contains(event.target) && !button.contains(event.target)) {
+                    menu.classList.remove('active');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
